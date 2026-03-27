@@ -6,9 +6,8 @@
   <title>Home Clock Widget</title>
   <style>
     :root {
-      --bg: #d9e8f6;
-      --time: #66666b;
-      --date: #4f5056;
+      --bg: #e6f0fa;
+      --text: #5b5b60;
     }
 
     * {
@@ -40,60 +39,34 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 10px 6px 12px;
-      overflow: hidden;
+      gap: 8px;
     }
 
-    .clock {
-      width: 100%;
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      white-space: nowrap;
-      line-height: 0.95;
+    .time {
+      font-size: 68px;
+      font-weight: 400;
+      line-height: 1;
       font-variant-numeric: tabular-nums;
-      letter-spacing: -0.065em;
-      color: var(--time);
-      transform: translateX(-1px);
-    }
-
-    .main-time {
-      font-size: 64px;
-      font-weight: 400;
-    }
-
-    .seconds {
-      font-size: 64px;
-      font-weight: 400;
-      margin-left: 0;
-      opacity: 1;
+      letter-spacing: -0.02em;
+      color: var(--text);
     }
 
     .date {
-      font-size: 21px;
-      font-weight: 500;
+      font-size: 32px;
+      font-weight: 400;
       line-height: 1;
-      letter-spacing: 0.01em;
-      color: var(--date);
-      text-align: center;
-      white-space: nowrap;
-      transform: translateY(1px);
+      color: var(--text);
     }
   </style>
 </head>
 <body>
   <div class="widget">
-    <div class="clock" aria-label="current time">
-      <span class="main-time" id="mainTime">00:00</span>
-      <span class="seconds" id="seconds">:00</span>
-    </div>
+    <div class="time" id="time">00:00:00</div>
     <div class="date" id="date">Fri Mar 27</div>
   </div>
 
   <script>
-    const mainTimeEl = document.getElementById('mainTime');
-    const secondsEl = document.getElementById('seconds');
+    const timeEl = document.getElementById('time');
     const dateEl = document.getElementById('date');
 
     const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -134,8 +107,7 @@
 
     function render() {
       const { hour, minute, second, weekday, month, day } = getTokyoParts();
-      mainTimeEl.textContent = `${hour}:${minute}`;
-      secondsEl.textContent = `:${second}`;
+      timeEl.textContent = `${hour}:${minute}:${second}`;
       dateEl.textContent = `${weekday} ${month} ${day}`;
     }
 
