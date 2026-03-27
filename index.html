@@ -7,10 +7,10 @@
   <style>
     :root {
       --bg: #d9e8f6;
-      --text: #111111;
-      --subtext: rgba(17, 17, 17, 0.78);
-      --card-border: rgba(255, 255, 255, 0.65);
-      --shadow: 0 10px 30px rgba(75, 102, 130, 0.14);
+      --text: #5b5b5f;
+      --subtext: #4e4e52;
+      --card-border: rgba(255, 255, 255, 0.72);
+      --shadow: 0 10px 30px rgba(75, 102, 130, 0.12);
     }
 
     * {
@@ -33,7 +33,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0;
     }
 
     .widget {
@@ -43,44 +42,12 @@
       border: 1px solid var(--card-border);
       border-radius: 20px;
       box-shadow: var(--shadow);
-      padding: 18px 20px 16px;
+      padding: 14px 18px 12px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-    }
-
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .date {
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      color: var(--subtext);
-      line-height: 1.2;
-      white-space: nowrap;
-    }
-
-    .greeting {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      color: var(--subtext);
-      text-align: right;
-      white-space: nowrap;
-    }
-
-    .clock-wrap {
-      flex: 1;
-      display: flex;
       align-items: center;
       justify-content: center;
-      transform: translateY(-4px);
+      gap: 8px;
     }
 
     .clock {
@@ -88,47 +55,53 @@
       align-items: baseline;
       justify-content: center;
       font-variant-numeric: tabular-nums;
-      letter-spacing: -0.04em;
-      color: var(--text);
-      line-height: 1;
       white-space: nowrap;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      color: var(--text);
+      transform: translateY(-2px);
     }
 
     .main-time {
-      font-size: 58px;
-      font-weight: 500;
+      font-size: 66px;
+      font-weight: 400;
     }
 
     .seconds {
-      font-size: 28px;
-      font-weight: 500;
+      font-size: 34px;
+      font-weight: 400;
       margin-left: 4px;
-      opacity: 0.88;
+      opacity: 0.96;
+    }
+
+    .date {
+      font-size: 21px;
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+      color: var(--subtext);
+      text-align: center;
+      white-space: nowrap;
+      transform: translateY(2px);
     }
   </style>
 </head>
 <body>
   <div class="widget">
-    <div class="top">
-      <div class="date" id="date"></div>
-      <div class="greeting" id="greeting"></div>
+    <div class="clock" aria-label="current time">
+      <span class="main-time" id="mainTime">00:00</span>
+      <span class="seconds" id="seconds">:00</span>
     </div>
-
-    <div class="clock-wrap">
-      <div class="clock" aria-label="current time">
-        <span class="main-time" id="mainTime">00:00</span>
-        <span class="seconds" id="seconds">00</span>
-      </div>
-    </div>
+    <div class="date" id="date">Fri Mar 27</div>
   </div>
 
   <script>
-    const dateEl = document.getElementById('date');
-    const greetingEl = document.getElementById('greeting');
     const mainTimeEl = document.getElementById('mainTime');
     const secondsEl = document.getElementById('seconds');
+    const dateEl = document.getElementById('date');
 
     const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     function getTokyoParts() {
       const now = new Date();
@@ -149,39 +122,25 @@
         if (part.type !== 'literal') map[part.type] = part.value;
       }
 
-      const year = Number(map.year);
-      const month = Number(map.month);
-      const day = Number(map.day);
-      const hour = Number(map.hour);
-      const minute = map.minute;
-      const second = map.second;
-
-      const weekdayIndex = new Date(`${map.year}-${map.month}-${map.day}T00:00:00+09:00`).getDay();
-      const weekday = weekdays[weekdayIndex];
+      const isoDate = `${map.year}-${map.month}-${map.day}`;
+      const weekdayIndex = new Date(`${isoDate}T00:00:00+09:00`).getDay();
+      const monthIndex = Number(map.month) - 1;
 
       return {
-        year,
-        month: map.month,
-        day: map.day,
-        hour,
-        minute,
-        second,
-        weekday,
+        hour: map.hour,
+        minute: map.minute,
+        second: map.second,
+        weekday: weekdays[weekdayIndex],
+        month: months[monthIndex],
+        day: String(Number(map.day)),
       };
     }
 
-    function getGreeting(hour) {
-      if (hour >= 5 && hour < 11) return 'Good morning';
-      if (hour >= 11 && hour < 18) return 'Hello';
-      return 'Good evening';
-    }
-
     function render() {
-      const { year, month, day, hour, minute, second, weekday } = getTokyoParts();
-      dateEl.textContent = `${year}.${month}.${day} ${weekday}`;
-      greetingEl.textContent = getGreeting(hour);
-      mainTimeEl.textContent = `${String(hour).padStart(2, '0')}:${minute}`;
+      const { hour, minute, second, weekday, month, day } = getTokyoParts();
+      mainTimeEl.textContent = `${hour}:${minute}`;
       secondsEl.textContent = `:${second}`;
+      dateEl.textContent = `${weekday} ${month} ${day}`;
     }
 
     render();
